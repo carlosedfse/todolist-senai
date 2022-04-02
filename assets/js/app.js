@@ -72,7 +72,7 @@ function addToList(todo) {
 const inputTodo = getItem("#input-todo");
 
 inputTodo.addEventListener("keydown", (evento) => {
-    if (evento.code == 'Enter') {
+    if ((evento.code == 'Enter') || ((evento.keyCode === 13) && (evento.location === 3))) {
         saveTodo({
             title: inputTodo.value,
             done: false
