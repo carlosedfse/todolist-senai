@@ -14,4 +14,4 @@ Algoritmo para adicionar uma tarefa na lista:
 2. [x] Criar um item de lista e adicionar na lista de tarefas;
 3. [x] Adicionar um item na lista quando pressionar o Enter;
 4. [x] Riscar tarefa ao clicar no checkbox;
-5. [ ] Salvar as tarefas no navegador;
+5. [x] Salvar as tarefas no navegador;

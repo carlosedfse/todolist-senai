@@ -1,23 +1,60 @@
+const storage = window.localStorage;
+
 function getItem(item) {
     return document.querySelector(item);
 }
 
-function addTodo(todoText){
-    if(todoText != ""){
+function saveTodo(todo) {
+    const savedTodoList = JSON.parse(storage.getItem("todoList"));
+
+    addToList({
+        id: savedTodoList.length,
+        ...todo
+    });
+
+    const newTodo = {
+        id: savedTodoList.length,
+        ...todo
+    }
+
+    savedTodoList.push(newTodo);
+    storage.setItem('todoList', JSON.stringify(savedTodoList));
+}
+
+
+function updateTodo(todo) {
+    const savedTodoList = JSON.parse(storage.getItem("todoList"));
+    const newSavedeTodoList = savedTodoList.map((item) => {
+        if (item.id == todo.id) {
+            item.done = todo.done;
+        }
+        return item;
+    })
+
+    storage.setItem("todoList", JSON.stringify(newSavedeTodoList));
+}
+
+function addToList(todo) {
+    if (todo.title != "") {
         const div = document.createElement("div");
         div.classList.add("form-check");
-        
+
         const input = document.createElement("input");
         input.type = "checkbox";
         input.classList.add("form-check-input");
-        input.onclick = function (){
+        input.onclick = function () {
             return checkTodo(this);
         }
 
         const label = document.createElement("label");
         label.classList.add("form-check-label");
+        input.value = todo.id
+        if (todo.done) {
+            label.classList.add("todo-done");
+            input.checked = true;
+        }
 
-        const textItem = document.createTextNode(todoText);
+        const textItem = document.createTextNode(todo.title);
 
         label.appendChild(textItem);
         div.appendChild(input);
@@ -31,14 +68,15 @@ function addTodo(todoText){
         todoList.appendChild(listItem);
     }
 }
-    
 
 const inputTodo = getItem("#input-todo");
 
 inputTodo.addEventListener("keydown", (evento) => {
-    if(evento.code == 'Enter'){
-        const inputValue = inputTodo.value;
-        addTodo(inputValue);
+    if (evento.code == 'Enter') {
+        saveTodo({
+            title: inputTodo.value,
+            done: false
+        });
         inputTodo.value = "";
     }
 });
@@ -46,17 +84,37 @@ inputTodo.addEventListener("keydown", (evento) => {
 const btnAddTodo = getItem("#btn-add-todo");
 btnAddTodo.addEventListener("click", (evento) => {
     const inputValue = inputTodo.value;
-    addTodo(inputValue);
+    saveTodo({
+        title: inputValue,
+        done: false
+    });
     inputTodo.value = "";
 });
 
 
-function checkTodo(checkbox){
+function checkTodo(checkbox) {
     const label = checkbox.nextElementSibling;
 
-    if(checkbox.checked == true){
+    if (checkbox.checked == true) {
         label.classList.add("todo-done");
     } else {
         label.classList.remove("todo-done");
     }
+
+    updateTodo({
+        id: checkbox.value,
+        done: checkbox.checked
+    });
 }
+
+let savedTodoList = storage.getItem("todoList");
+
+if (!Array.isArray(JSON.parse(savedTodoList))) {
+    storage.setItem("todoList", JSON.stringify([]));
+    savedTodoList = "[]";
+}
+
+const todoListJson = JSON.parse(savedTodoList);
+todoListJson.map((todo) => {
+    addToList(todo);
+});
